@@ -1,6 +1,6 @@
 """
 **Submitted to ANAC 2020 SCML**
-*Authors* type-your-team-member-names-with-their-emails here
+David Krongauz - kingkrong@gmail.com Hadar Ben-Efraim - hadarib@gmail.com
 
 
 This code is free to use or update given that proper attribution is given to
