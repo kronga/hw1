@@ -1,36 +1,11 @@
 """
-**Submitted to ANAC 2020 SCML**
+**Submitted to ANAC 2021 SCML**
 David Krongauz - kingkrong@gmail.com Hadar Ben-Efraim - hadarib@gmail.com
+CS Dept., Bar-Ilan Uni., Israel
 
 
 This code is free to use or update given that proper attribution is given to
-the authors and the ANAC 2020 SCML.
-
-This module implements a factory manager for the SCM 2020 league of ANAC 2019
-competition. This version will not use subcomponents. Please refer to the
-[game description](http://www.yasserm.com/scml/scml2020.pdf) for all the
-callbacks and subcomponents available.
-
-Your agent can learn about the state of the world and itself by accessing
-properties in the AWI it has. For example:
-
-- The number of simulation steps (days): self.awi.n_steps
-- The current step (day): self.awi.current_steps
-- The factory state: self.awi.state
-- Availability for producton: self.awi.available_for_production
-
-
-Your agent can act in the world by calling methods in the AWI it has.
-For example:
-
-- *self.awi.request_negotiation(...)*  # requests a negotiation with one partner
-- *self.awi.request_negotiations(...)* # requests a set of negotiations
-
-
-You can access the full list of these capabilities on the documentation.
-
-- For properties/methods available only to SCM agents, check the list
-  [here](https://scml.readthedocs.io/en/latest/api/scml.scml2020.AWI.html)
+the authors and the ANAC 2021 SCML.
 
 """
 
@@ -70,7 +45,7 @@ import pickle
 
 
 class PDPSyncAgent(GreedySyncAgent):
-    """ Dynmical programming agent vasd in GreedySyncAgent"""
+    """ Predictive Dynmical programming agent basd on GreedySyncAgent"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -100,8 +75,11 @@ class PDPSyncAgent(GreedySyncAgent):
         n_output = len(output_offers)
         t_input = [[-1 for i in range(my_input_needs + 1)] for j in range(n_input + 1)]
         t_output = [[-1 for i in range(my_output_needs + 1)] for j in range(n_output + 1)]
-
+        
+        
         def knapsack_agent(t, offers, my_needs, n, isSelling):
+             """ Knapscak algotrithm func. with memoization"""
+          
             sorted_offers = sorted(
                 offers.values(),
                 key=lambda x: -x[UNIT_PRICE] if isSelling else x[UNIT_PRICE],
@@ -125,6 +103,7 @@ class PDPSyncAgent(GreedySyncAgent):
                 return t[n][my_needs]
 
         def calc_items_idxs(t, sorted_offers, my_needs, n):
+            """Recoveres offers indexes from memmoization matrix"""
 
             # stores the result of Knapsack
             res = t[n][my_needs]
@@ -186,6 +165,7 @@ class PDPSyncAgent(GreedySyncAgent):
                     self._threshold = 0.2
 
         def transform_idxs2keys(idxs, sorted_offers, offers, is_selling):
+            """Given the indexes formalizes the responses according to the SCML environment """
             secured, outputs, chosen = 0, [], dict()
             change_threshold(is_selling)
 
@@ -238,13 +218,13 @@ class PDPSyncAgent(GreedySyncAgent):
         return responses
 
 
-def run(competition='oneshot',
-        reveal_names=True,
-        n_steps=20,
-        n_configs=2,
-        max_n_worlds_per_config=None,
-        n_runs_per_world=1
-        ):
+# def run(competition='oneshot',
+#         reveal_names=True,
+#         n_steps=20,
+#         n_configs=2,
+#         max_n_worlds_per_config=None,
+#         n_runs_per_world=1
+#         ):
     """
     **Not needed for submission.** You can use this function to test your agent.
 
@@ -267,28 +247,28 @@ def run(competition='oneshot',
         - To speed it up, use a smaller `n_step` value
 
     """
-    competitors = [GreedySyncAgent, RandomOneShotAgent, DPSyncAgent, SyncRandomOneShotAgent, OneshotDoNothingAgent]
-    start = time.perf_counter()
-    if competition == 'std':
-        results = anac2020_std(
-            competitors=competitors, verbose=True, n_steps=n_steps,
-            n_configs=n_configs, n_runs_per_world=n_runs_per_world
-        )
-    elif competition == 'collusion':
-        results = anac2020_collusion(
-            competitors=competitors, verbose=True, n_steps=n_steps,
-            n_configs=n_configs, n_runs_per_world=n_runs_per_world
-        )
-    elif competition == 'oneshot':
-        results = anac2021_oneshot(
-            competitors=competitors, verbose=True, n_steps=n_steps,
-            n_configs=n_configs, n_runs_per_world=n_runs_per_world
-        )
-    else:
-        raise ValueError(f'Unknown competition type {competition}')
-    print(tabulate(results.total_scores, headers='keys', tablefmt='psql'))
-    print(f'Finished in {humanize_time(time.perf_counter() - start)}')
+#     competitors = [GreedySyncAgent, RandomOneShotAgent, DPSyncAgent, SyncRandomOneShotAgent, OneshotDoNothingAgent]
+#     start = time.perf_counter()
+#     if competition == 'std':
+#         results = anac2020_std(
+#             competitors=competitors, verbose=True, n_steps=n_steps,
+#             n_configs=n_configs, n_runs_per_world=n_runs_per_world
+#         )
+#     elif competition == 'collusion':
+#         results = anac2020_collusion(
+#             competitors=competitors, verbose=True, n_steps=n_steps,
+#             n_configs=n_configs, n_runs_per_world=n_runs_per_world
+#         )
+#     elif competition == 'oneshot':
+#         results = anac2021_oneshot(
+#             competitors=competitors, verbose=True, n_steps=n_steps,
+#             n_configs=n_configs, n_runs_per_world=n_runs_per_world
+#         )
+#     else:
+#         raise ValueError(f'Unknown competition type {competition}')
+#     print(tabulate(results.total_scores, headers='keys', tablefmt='psql'))
+#     print(f'Finished in {humanize_time(time.perf_counter() - start)}')
 
 
-if __name__ == '__main__':
-    run()
+# if __name__ == '__main__':
+#     run()
